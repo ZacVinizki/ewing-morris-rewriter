@@ -181,7 +181,7 @@ def render_step_2():
             st.rerun()
 
 def render_step_3():
-    """Render the results step - SIMPLE VERSION"""
+    """Render the results step - CLEAN VERSION"""
     st.markdown("""
     <div class="success-container">
         <div class="progress-step">3</div>
@@ -190,22 +190,34 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
-        # Display the content in a nice container
+        # Display the content in a nice container that's selectable
         st.markdown(f"""
         <div class="result-container">
-            <div class="result-text">{st.session_state.rewritten_content}</div>
+            <div class="result-text" 
+                 onclick="
+                     if (navigator.clipboard) {{
+                         navigator.clipboard.writeText(this.innerText);
+                         this.style.background = 'rgba(0, 255, 136, 0.2)';
+                         this.style.border = '2px solid #00ff88';
+                         setTimeout(() => {{
+                             this.style.background = '';
+                             this.style.border = '';
+                         }}, 1000);
+                     }} else {{
+                         const range = document.createRange();
+                         range.selectNodeContents(this);
+                         const selection = window.getSelection();
+                         selection.removeAllRanges();
+                         selection.addRange(range);
+                     }}
+                 "
+                 style="cursor: pointer;"
+                 title="Click to copy this text!">{st.session_state.rewritten_content}</div>
         </div>
+        <p style="text-align: center; color: #888; font-size: 0.9rem; margin-top: 0.5rem;">
+            👆 Click the text above to copy it instantly!
+        </p>
         """, unsafe_allow_html=True)
-        
-        # Simple copyable text area
-        st.markdown("### 📋 Copy your text:")
-        st.text_area(
-            "Copy Text",
-            value=st.session_state.rewritten_content,
-            height=150,
-            key="copy_area",
-            label_visibility="collapsed"
-        )
         
         # Action buttons
         col1, col2, col3 = st.columns(3)
@@ -242,7 +254,7 @@ def render_step_3():
         with col2:
             st.markdown("**Ewing Morris Version:**")
             st.text_area("Rewritten", value=st.session_state.rewritten_content, height=150, disabled=True, key="new_compare")
-
+            
 def render_footer():
     """Render the application footer"""
     st.markdown('</div>', unsafe_allow_html=True)
