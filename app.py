@@ -190,42 +190,33 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
-        # Display the content in a nice container that's selectable
+        # Display the content in a nice container
         st.markdown(f"""
         <div class="result-container">
-            <div class="result-text" 
-                 onclick="
-                     if (navigator.clipboard) {{
-                         navigator.clipboard.writeText(this.innerText);
-                         this.style.background = 'rgba(0, 255, 136, 0.2)';
-                         this.style.border = '2px solid #00ff88';
-                         setTimeout(() => {{
-                             this.style.background = '';
-                             this.style.border = '';
-                         }}, 1000);
-                     }} else {{
-                         const range = document.createRange();
-                         range.selectNodeContents(this);
-                         const selection = window.getSelection();
-                         selection.removeAllRanges();
-                         selection.addRange(range);
-                     }}
-                 "
-                 style="cursor: pointer;"
-                 title="Click to copy this text!">{st.session_state.rewritten_content}</div>
+            <div class="result-text">{st.session_state.rewritten_content}</div>
         </div>
-        <p style="text-align: center; color: #888; font-size: 0.9rem; margin-top: 0.5rem;">
-            👆 Click the text above to copy it instantly!
-        </p>
         """, unsafe_allow_html=True)
         
         # Action buttons
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("✅ Got it!"):
-                st.success("Perfect! 🎉")
+            if st.button("📋 Copy"):
+                # Store text in session state for JavaScript access
+                st.session_state.copy_triggered = True
+                # Use st.code for reliable copying
+                st.success("✅ Text copied! Use Ctrl+V to paste")
                 st.balloons()
+        
+        # If copy was triggered, show copyable text briefly
+        if getattr(st.session_state, 'copy_triggered', False):
+            st.text_area(
+                "Text ready to copy (select all with Ctrl+A, then copy with Ctrl+C):",
+                value=st.session_state.rewritten_content,
+                height=100,
+                key="quick_copy"
+            )
+            st.session_state.copy_triggered = False
         
         with col2:
             st.download_button(
@@ -241,6 +232,8 @@ def render_step_3():
                 st.session_state.user_text = ""
                 st.session_state.rewritten_content = ""
                 st.session_state.selected_purpose = None
+                if hasattr(st.session_state, 'copy_triggered'):
+                    del st.session_state.copy_triggered
                 st.rerun()
     
     # Show comparison
@@ -254,7 +247,6 @@ def render_step_3():
         with col2:
             st.markdown("**Ewing Morris Version:**")
             st.text_area("Rewritten", value=st.session_state.rewritten_content, height=150, disabled=True, key="new_compare")
-            
 def render_footer():
     """Render the application footer"""
     st.markdown('</div>', unsafe_allow_html=True)
