@@ -181,47 +181,6 @@ def render_step_2():
             st.rerun()
 
 def render_step_3():
-    """Render the results step - SIMPLE WORKING COPY"""
-    st.markdown("""
-    <div class="success-container">
-        <div class="progress-step">3</div>
-        <div class="success-text">✨ Perfect! Now it sounds like Ewing Morris</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.session_state.rewritten_content:
-        # Display the content in a nice container
-        st.markdown(f"""
-        <div class="result-container">
-            <div class="result-text">{st.session_state.rewritten_content}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Action buttons
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            copy_clicked = st.button("📋 Copy")
-        
-        with col2:
-            st.download_button(
-                "💾 Download",
-                data=st.session_state.rewritten_content,
-                file_name=f"ewing_morris_{datetime.now().strftime('%Y%m%d_%H%M')}.txt",
-                mime="text/plain"
-            )
-        
-        with col3:
-            if st.button("🔄 New"):
-                st.session_state.step = 1
-                st.session_state.user_text = ""
-                st.session_state.rewritten_content = ""
-                st.session_state.selected_purpose = None
-                st.rerun()
-        
-        # Show copy area when copy button is clicked
-        if copy_clicked:
-            st.success("✅ Textdef render_step_3():
     """Render the results step - ACTUALLY WORKING COPY"""
     st.markdown("""
     <div class="success-container">
@@ -274,7 +233,7 @@ def render_step_3():
         with col2:
             st.markdown("**Ewing Morris Version:**")
             st.text_area("Rewritten", value=st.session_state.rewritten_content, height=150, disabled=True, key="new_compare")
-
+            
 def render_footer():
     """Render the application footer"""
     st.markdown('</div>', unsafe_allow_html=True)
