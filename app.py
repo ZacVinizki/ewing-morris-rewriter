@@ -203,13 +203,15 @@ def render_step_3():
         with col1:
             if st.button("📋 Copy"):
                 st.balloons()
-                # Actually copy without showing any extra boxes
-                import streamlit.components.v1 as components
-                components.html(f"""
+                # Use proper JavaScript execution to copy
+                st.markdown(f"""
+                <textarea id="copyText" style="position:absolute;left:-9999px;">{st.session_state.rewritten_content}</textarea>
                 <script>
-                navigator.clipboard.writeText(`{st.session_state.rewritten_content}`);
+                const textarea = document.getElementById('copyText');
+                textarea.select();
+                document.execCommand('copy');
                 </script>
-                """, height=0)
+                """, unsafe_allow_html=True)
                 st.success("✅ Copied!")
         
         with col2:
