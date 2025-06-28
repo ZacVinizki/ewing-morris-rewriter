@@ -243,7 +243,6 @@ def render_step_3():
         
         with col1:
             if st.button("📋 Copy"):
-                # Use st.code which has built-in copy functionality
                 st.balloons()
                 st.success("✅ Use the copy button in the code box below:")
                 st.code(st.session_state.rewritten_content, language=None)
@@ -276,7 +275,6 @@ def render_step_3():
             st.markdown("**Ewing Morris Version:**")
             st.text_area("Rewritten", value=st.session_state.rewritten_content, height=150, disabled=True, key="new_compare")
 
-            
 def render_footer():
     """Render the application footer"""
     st.markdown('</div>', unsafe_allow_html=True)
