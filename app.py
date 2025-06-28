@@ -190,16 +190,18 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
-        # Display the content in a nice container
-        st.markdown(f"""
-        <div class="result-container">
-            <div class="result-text">{st.session_state.rewritten_content}</div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Display the content with copy button in top right
+        col_text, col_copy = st.columns([4, 1])
         
-        # Copy functionality always visible at top right
-        st.markdown("### 📋 Copy from here:")
-        st.code(st.session_state.rewritten_content, language=None)
+        with col_text:
+            st.markdown(f"""
+            <div class="result-container">
+                <div class="result-text">{st.session_state.rewritten_content}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_copy:
+            st.code(st.session_state.rewritten_content, language=None)
         
         # Action buttons
         col1, col2, col3 = st.columns(3)
@@ -207,7 +209,6 @@ def render_step_3():
         with col1:
             if st.button("📋 Click top right to copy"):
                 st.balloons()
-                st.success("✅ Use the copy button above!")
         
         with col2:
             st.download_button(
@@ -224,7 +225,7 @@ def render_step_3():
                 st.session_state.rewritten_content = ""
                 st.session_state.selected_purpose = None
                 st.rerun()
-    
+                
     # Show comparison
     with st.expander("🔍 See Before & After"):
         col1, col2 = st.columns(2)
