@@ -197,22 +197,17 @@ def render_step_3():
         </div>
         """, unsafe_allow_html=True)
         
+        # Copy functionality always visible at top right
+        st.markdown("### 📋 Copy from here:")
+        st.code(st.session_state.rewritten_content, language=None)
+        
         # Action buttons
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("📋 Copy"):
+            if st.button("📋 Click top right to copy"):
                 st.balloons()
-                # Use proper JavaScript execution to copy
-                st.markdown(f"""
-                <textarea id="copyText" style="position:absolute;left:-9999px;">{st.session_state.rewritten_content}</textarea>
-                <script>
-                const textarea = document.getElementById('copyText');
-                textarea.select();
-                document.execCommand('copy');
-                </script>
-                """, unsafe_allow_html=True)
-                st.success("✅ Copied!")
+                st.success("✅ Use the copy button above!")
         
         with col2:
             st.download_button(
