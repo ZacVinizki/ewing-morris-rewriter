@@ -203,8 +203,11 @@ def render_step_3():
         with col1:
             if st.button("📋 Copy"):
                 st.balloons()
-                st.success("✅ Use the copy button in the code box below:")
-                st.code(st.session_state.rewritten_content, language=None)
+                # Create a temporary hidden code block for copy functionality
+                with st.container():
+                    st.markdown('<div style="height:0;overflow:hidden;">', unsafe_allow_html=True)
+                    st.code(st.session_state.rewritten_content, language=None)
+                    st.markdown('</div>', unsafe_allow_html=True)
         
         with col2:
             st.download_button(
