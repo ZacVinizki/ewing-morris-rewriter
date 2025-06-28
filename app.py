@@ -190,27 +190,18 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
-        # Display the content in a nice container for reading
+        # Display the content in a nice container
         st.markdown(f"""
         <div class="result-container">
             <div class="result-text">{st.session_state.rewritten_content}</div>
         </div>
         """, unsafe_allow_html=True)
         
-        # ONE copyable text area with built-in copy button (top right of this box)
-        st.text_area(
-            "Your rewritten text is ready to copy:",
-            value=st.session_state.rewritten_content,
-            height=150,
-            key="copy_area",
-            help="Use the copy button in the top right corner of this text box"
-        )
-        
         # Action buttons
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("📋 Click copy icon above ↗️"):
+            if st.button("📋 Drag and Ctrl+C the text above"):
                 st.balloons()
         
         with col2:
@@ -228,7 +219,6 @@ def render_step_3():
                 st.session_state.rewritten_content = ""
                 st.session_state.selected_purpose = None
                 st.rerun()
-                
     # Show comparison
     with st.expander("🔍 See Before & After"):
         col1, col2 = st.columns(2)
