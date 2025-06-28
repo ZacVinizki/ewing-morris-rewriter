@@ -181,6 +181,47 @@ def render_step_2():
             st.rerun()
 
 def render_step_3():
+    """Render the results step - SIMPLE WORKING COPY"""
+    st.markdown("""
+    <div class="success-container">
+        <div class="progress-step">3</div>
+        <div class="success-text">✨ Perfect! Now it sounds like Ewing Morris</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if st.session_state.rewritten_content:
+        # Display the content in a nice container
+        st.markdown(f"""
+        <div class="result-container">
+            <div class="result-text">{st.session_state.rewritten_content}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Action buttons
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            copy_clicked = st.button("📋 Copy")
+        
+        with col2:
+            st.download_button(
+                "💾 Download",
+                data=st.session_state.rewritten_content,
+                file_name=f"ewing_morris_{datetime.now().strftime('%Y%m%d_%H%M')}.txt",
+                mime="text/plain"
+            )
+        
+        with col3:
+            if st.button("🔄 New"):
+                st.session_state.step = 1
+                st.session_state.user_text = ""
+                st.session_state.rewritten_content = ""
+                st.session_state.selected_purpose = None
+                st.rerun()
+        
+        # Show copy area when copy button is clicked
+        if copy_clicked:
+            st.success("✅ Textdef render_step_3():
     """Render the results step - ACTUALLY WORKING COPY"""
     st.markdown("""
     <div class="success-container">
@@ -190,13 +231,10 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
-        # Clean text for JavaScript (escape quotes and newlines)
-        clean_text = st.session_state.rewritten_content.replace('"', '\\"').replace("'", "\\'").replace('\n', '\\n').replace('\r', '')
-        
         # Display the content in a nice container
         st.markdown(f"""
         <div class="result-container">
-            <div class="result-text" id="copyText">{st.session_state.rewritten_content}</div>
+            <div class="result-text">{st.session_state.rewritten_content}</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -205,47 +243,10 @@ def render_step_3():
         
         with col1:
             if st.button("📋 Copy"):
-                # JavaScript that actually copies to clipboard
-                st.markdown(f"""
-                <script>
-                const textToCopy = "{clean_text}";
-                
-                if (navigator.clipboard && window.isSecureContext) {{
-                    // Use modern clipboard API
-                    navigator.clipboard.writeText(textToCopy).then(function() {{
-                        console.log('Text copied to clipboard successfully');
-                    }}).catch(function(err) {{
-                        console.error('Failed to copy text: ', err);
-                        // Fallback
-                        fallbackCopy(textToCopy);
-                    }});
-                }} else {{
-                    // Fallback for older browsers or non-HTTPS
-                    fallbackCopy(textToCopy);
-                }}
-                
-                function fallbackCopy(text) {{
-                    const textArea = document.createElement('textarea');
-                    textArea.value = text;
-                    textArea.style.position = 'fixed';
-                    textArea.style.left = '-999999px';
-                    textArea.style.top = '-999999px';
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-                    try {{
-                        document.execCommand('copy');
-                        console.log('Fallback copy successful');
-                    }} catch (err) {{
-                        console.error('Fallback copy failed: ', err);
-                    }}
-                    document.body.removeChild(textArea);
-                }}
-                </script>
-                """, unsafe_allow_html=True)
-                
-                st.success("✅ Text copied to clipboard!")
+                # Use st.code which has built-in copy functionality
                 st.balloons()
+                st.success("✅ Use the copy button in the code box below:")
+                st.code(st.session_state.rewritten_content, language=None)
         
         with col2:
             st.download_button(
@@ -263,7 +264,7 @@ def render_step_3():
                 st.session_state.selected_purpose = None
                 st.rerun()
     
-    # ONLY show comparison in the expandable section - no redundant text
+    # Show comparison
     with st.expander("🔍 See Before & After"):
         col1, col2 = st.columns(2)
         
@@ -274,6 +275,7 @@ def render_step_3():
         with col2:
             st.markdown("**Ewing Morris Version:**")
             st.text_area("Rewritten", value=st.session_state.rewritten_content, height=150, disabled=True, key="new_compare")
+
             
 def render_footer():
     """Render the application footer"""
