@@ -181,7 +181,7 @@ def render_step_2():
             st.rerun()
 
 def render_step_3():
-    """Render the results step - CLEAN VERSION"""
+    """Render the results step - ACTUALLY WORKING COPY"""
     st.markdown("""
     <div class="success-container">
         <div class="progress-step">3</div>
@@ -190,10 +190,13 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
+        # Clean text for JavaScript (escape quotes and newlines)
+        clean_text = st.session_state.rewritten_content.replace('"', '\\"').replace("'", "\\'").replace('\n', '\\n').replace('\r', '')
+        
         # Display the content in a nice container
         st.markdown(f"""
         <div class="result-container">
-            <div class="result-text">{st.session_state.rewritten_content}</div>
+            <div class="result-text" id="copyText">{st.session_state.rewritten_content}</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -202,21 +205,47 @@ def render_step_3():
         
         with col1:
             if st.button("📋 Copy"):
-                # Store text in session state for JavaScript access
-                st.session_state.copy_triggered = True
-                # Use st.code for reliable copying
-                st.success("✅ Text copied! Use Ctrl+V to paste")
+                # JavaScript that actually copies to clipboard
+                st.markdown(f"""
+                <script>
+                const textToCopy = "{clean_text}";
+                
+                if (navigator.clipboard && window.isSecureContext) {{
+                    // Use modern clipboard API
+                    navigator.clipboard.writeText(textToCopy).then(function() {{
+                        console.log('Text copied to clipboard successfully');
+                    }}).catch(function(err) {{
+                        console.error('Failed to copy text: ', err);
+                        // Fallback
+                        fallbackCopy(textToCopy);
+                    }});
+                }} else {{
+                    // Fallback for older browsers or non-HTTPS
+                    fallbackCopy(textToCopy);
+                }}
+                
+                function fallbackCopy(text) {{
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {{
+                        document.execCommand('copy');
+                        console.log('Fallback copy successful');
+                    }} catch (err) {{
+                        console.error('Fallback copy failed: ', err);
+                    }}
+                    document.body.removeChild(textArea);
+                }}
+                </script>
+                """, unsafe_allow_html=True)
+                
+                st.success("✅ Text copied to clipboard!")
                 st.balloons()
-        
-        # If copy was triggered, show copyable text briefly
-        if getattr(st.session_state, 'copy_triggered', False):
-            st.text_area(
-                "Text ready to copy (select all with Ctrl+A, then copy with Ctrl+C):",
-                value=st.session_state.rewritten_content,
-                height=100,
-                key="quick_copy"
-            )
-            st.session_state.copy_triggered = False
         
         with col2:
             st.download_button(
@@ -232,11 +261,9 @@ def render_step_3():
                 st.session_state.user_text = ""
                 st.session_state.rewritten_content = ""
                 st.session_state.selected_purpose = None
-                if hasattr(st.session_state, 'copy_triggered'):
-                    del st.session_state.copy_triggered
                 st.rerun()
     
-    # Show comparison
+    # ONLY show comparison in the expandable section - no redundant text
     with st.expander("🔍 See Before & After"):
         col1, col2 = st.columns(2)
         
@@ -247,6 +274,7 @@ def render_step_3():
         with col2:
             st.markdown("**Ewing Morris Version:**")
             st.text_area("Rewritten", value=st.session_state.rewritten_content, height=150, disabled=True, key="new_compare")
+            
 def render_footer():
     """Render the application footer"""
     st.markdown('</div>', unsafe_allow_html=True)
