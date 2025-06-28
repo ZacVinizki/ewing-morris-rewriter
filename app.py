@@ -190,30 +190,28 @@ def render_step_3():
     """, unsafe_allow_html=True)
     
     if st.session_state.rewritten_content:
-        # Display the content in a nice container
+        # Display the content in a nice container for reading
         st.markdown(f"""
         <div class="result-container">
             <div class="result-text">{st.session_state.rewritten_content}</div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Copyable text area that preserves formatting
-        st.markdown("### 📋 Copy your formatted text:")
+        # ONE copyable text area with built-in copy button (top right of this box)
         st.text_area(
-            "Copy Text",
+            "Your rewritten text is ready to copy:",
             value=st.session_state.rewritten_content,
             height=150,
             key="copy_area",
-            label_visibility="collapsed"
+            help="Use the copy button in the top right corner of this text box"
         )
         
         # Action buttons
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("📋 Click top right ↗️"):
+            if st.button("📋 Click copy icon above ↗️"):
                 st.balloons()
-                st.success("✅ Use the copy button in the text box above!")
         
         with col2:
             st.download_button(
