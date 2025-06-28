@@ -203,11 +203,14 @@ def render_step_3():
         with col1:
             if st.button("📋 Copy"):
                 st.balloons()
-                # Create a temporary hidden code block for copy functionality
-                with st.container():
-                    st.markdown('<div style="height:0;overflow:hidden;">', unsafe_allow_html=True)
-                    st.code(st.session_state.rewritten_content, language=None)
-                    st.markdown('</div>', unsafe_allow_html=True)
+                # Actually copy without showing any extra boxes
+                import streamlit.components.v1 as components
+                components.html(f"""
+                <script>
+                navigator.clipboard.writeText(`{st.session_state.rewritten_content}`);
+                </script>
+                """, height=0)
+                st.success("✅ Copied!")
         
         with col2:
             st.download_button(
