@@ -6,7 +6,6 @@ for proxy_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
 
 import openai
 from typing import Dict, List
-from config import Config
 
 # Configure OpenAI (ADD THIS LINE)
 openai.api_key = os.getenv("OPENAI_API_KEY")
