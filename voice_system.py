@@ -85,7 +85,7 @@ Ewing Morris & Co. Investment Partners Ltd."""
         }
     
     def _create_ewing_morris_prompt(self, original_content: str, category: str) -> str:
-        """Create professional and conversational, friendly Ewing Morris voice prompts"""
+        """ Create professional and conversational, friendly Ewing Morris voice prompts using the examples above and following that style"""
         
         examples = self.voice_examples.get(category, [])
         
@@ -125,20 +125,24 @@ Ewing Morris & Co. Investment Partners Ltd."""
         
         category_profile = voice_profile.get(category, voice_profile["Newsletter Content"])
         
-        prompt = f"""You're writing for Ewing Morris, a Canadian investment firm that talks to people like real humans, not corporate robots.
+        prompt = f"""IGNORE THE WRITING STYLE AND TONE OF THE INPUT COMPLETELY.
+
+Your job: 
+1. Extract ONLY the facts/purpose from the input text
+2. Write NEW content in Ewing Morris voice using those facts
 
 EWING MORRIS VOICE = FRIENDLY + SMART + BRIEF
 • Talk like you're having coffee with a smart friend
 • No corporate jargon or fluff - just genuine, helpful content always being professional
-• Family and relationship focused, we wan't to make it feel personalized while being very professional and not even remotely silly, immature, or childish
-• Keep it short and conversational and too the point
+• Family and relationship focused, we want to make it feel personalized while being very professional and not even remotely silly, immature, or childish
+• Keep it short and conversational and to the point
 
 CONTENT TYPE: {category}
 VOICE FOR THIS TYPE: {category_profile['tone']}
 WRITING STYLE: {category_profile['style']}
 LANGUAGE TONE: {category_profile['language']}
 
-HERE'S HOW EWING MORRIS ACTUALLY WRITES:
+HERE'S HOW EWING MORRIS ACTUALLY WRITES FOR {category}:
 """
         
         for i, example in enumerate(examples[:2], 1):
@@ -147,21 +151,24 @@ HERE'S HOW EWING MORRIS ACTUALLY WRITES:
         prompt += f"""
 
 EWING MORRIS STYLE RULES:
-✓ Write like a smart, analystical, and professional human, not a press release
+✓ Write like a smart, analytical, and professional human, not a press release
 ✓ Keep it brief - people are busy
 ✓ Be friendly but professional and not overly friendly
 ✓ Use "we" and "you" - make it personal
-✓ No unnecessary dancy termonalogy or jargon
+✓ No unnecessary fancy terminology or jargon
 ✓ Use simple, clear language - no fluff
 ✓ Show you care about people, not just business
 ✓ Confident but not arrogant
 
-ORIGINAL CONTENT:
+CRITICAL: DO NOT copy the style/tone of the input. Extract facts only, then write in Ewing Morris voice.
+
+INPUT TEXT (extract facts only, ignore style):
 {original_content}
 
-REWRITE THIS in authentic Ewing Morris voice - make it {category_profile['tone'].lower()}, keep it brief, make it sound like real people wrote it.
+STEP 1: What are the key facts/purpose from this input?
+STEP 2: Now write this in authentic Ewing Morris voice using the examples above.
 
-REWRITTEN VERSION:"""
+NEW CONTENT IN EWING MORRIS VOICE:"""
         
         return prompt
     
@@ -175,7 +182,13 @@ REWRITTEN VERSION:"""
                 messages=[
                     {
                         "role": "system",
-                        "content": "You write for Ewing Morris in a very professional, coorporate style, but want to come across as friendly and warm at the same time. Think 'smart friend having coffee' not 'corporate press release'. Keep it brief, genuine, and human. No fluff or jargon - just clear, friendly, professional, intelligent communication that shows you care about people."
+                        "content": """You are an Ewing Morris communication specialist. Your job is to:
+
+1. EXTRACT the core facts/purpose from any input text
+2. COMPLETELY IGNORE the input's writing style, tone, and language choices
+3. GENERATE fresh content in consistent Ewing Morris voice
+
+NEVER copy or be influenced by the input's style. Whether the input is overly formal, casual, fancy, or simple - you always output the same consistent Ewing Morris voice. Think 'smart friend having coffee' not 'corporate press release'. Keep it brief, genuine, and human."""
                     },
                     {"role": "user", "content": prompt}
                 ],
