@@ -125,24 +125,17 @@ Ewing Morris & Co. Investment Partners Ltd."""
         
         category_profile = voice_profile.get(category, voice_profile["Newsletter Content"])
         
-        prompt = f"""IGNORE THE WRITING STYLE AND TONE OF THE INPUT COMPLETELY.
+        prompt = f"""DO NOT USE ANY WORDS OR PHRASES FROM THE INPUT TEXT.
 
-Your job: 
-1. Extract ONLY the facts/purpose from the input text
-2. Write NEW content in Ewing Morris voice using those facts
+Your ONLY job:
+1. Extract basic facts: WHAT event, WHEN, WHERE, WHY, WHO invited
+2. Write it EXACTLY like the Ewing Morris examples below
 
-EWING MORRIS VOICE = FRIENDLY + SMART + BRIEF
-• Talk like you're having coffee with a smart friend
-• No corporate jargon or fluff - just genuine, helpful content always being professional
-• Family and relationship focused, we want to make it feel personalized while being very professional and not even remotely silly, immature, or childish
-• Keep it short and conversational and to the point
+BANNED WORDS FROM INPUT: Never use words like "esteemed", "camaraderie", "delighted", "exclusive", "tapestry", "unforgettable", etc. - these are NOT Ewing Morris voice.
 
 CONTENT TYPE: {category}
-VOICE FOR THIS TYPE: {category_profile['tone']}
-WRITING STYLE: {category_profile['style']}
-LANGUAGE TONE: {category_profile['language']}
 
-HERE'S HOW EWING MORRIS ACTUALLY WRITES FOR {category}:
+HERE ARE THE EXACT EWING MORRIS EXAMPLES TO COPY THE STYLE FROM:
 """
         
         for i, example in enumerate(examples[:2], 1):
@@ -150,25 +143,24 @@ HERE'S HOW EWING MORRIS ACTUALLY WRITES FOR {category}:
         
         prompt += f"""
 
-EWING MORRIS STYLE RULES:
-✓ Write like a smart, analytical, and professional human, not a press release
-✓ Keep it brief - people are busy
-✓ Be friendly but professional and not overly friendly
-✓ Use "we" and "you" - make it personal
-✓ No unnecessary fancy terminology or jargon
-✓ Use simple, clear language - no fluff
-✓ Show you care about people, not just business
-✓ Confident but not arrogant
+EWING MORRIS LANGUAGE PATTERN (COPY THIS EXACTLY):
+✓ "Join us for..." (not "delighted to invite")
+✓ "We're excited to..." (not "thrilled") 
+✓ Simple, direct sentences
+✓ Professional but warm
+✓ No fancy descriptive words
+✓ Clear action items like "RSVP below"
 
-CRITICAL: DO NOT copy the style/tone of the input. Extract facts only, then write in Ewing Morris voice.
+WHAT I NEED TO EXTRACT FROM INPUT:
+- Event type: _____
+- Purpose: _____  
+- Who's invited: _____
+- Action needed: _____
 
-INPUT TEXT (extract facts only, ignore style):
+INPUT TEXT (ignore all language, extract facts only):
 {original_content}
 
-STEP 1: What are the key facts/purpose from this input?
-STEP 2: Now write this in authentic Ewing Morris voice using the examples above.
-
-NEW CONTENT IN EWING MORRIS VOICE:"""
+Now write this using ONLY the language patterns from the examples above. Sound exactly like those examples, not like the input."""
         
         return prompt
     
@@ -182,13 +174,15 @@ NEW CONTENT IN EWING MORRIS VOICE:"""
                 messages=[
                     {
                         "role": "system",
-                        "content": """You are an Ewing Morris communication specialist. Your job is to:
+                        "content": """You write ONLY in Ewing Morris voice. 
 
-1. EXTRACT the core facts/purpose from any input text
-2. COMPLETELY IGNORE the input's writing style, tone, and language choices
-3. GENERATE fresh content in consistent Ewing Morris voice
+RULES:
+1. Extract basic facts from input (what, when, where, who)
+2. NEVER use the input's language - no matter how fancy or simple
+3. Write using ONLY the language patterns from the provided examples
+4. Copy the sentence structure and word choices from examples exactly
 
-NEVER copy or be influenced by the input's style. Whether the input is overly formal, casual, fancy, or simple - you always output the same consistent Ewing Morris voice. Think 'smart friend having coffee' not 'corporate press release'. Keep it brief, genuine, and human."""
+You are not influenced by input language AT ALL. Your output sounds identical every time, using only Ewing Morris patterns like "Join us for..." and "We're excited to..." - never "delighted", "esteemed", "camaraderie", etc."""
                     },
                     {"role": "user", "content": prompt}
                 ],
