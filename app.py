@@ -52,6 +52,49 @@ from config import Config
 from voice_system import EwingMorrisVoiceSystem
 from styles import get_custom_css
 
+# PASSWORD PROTECTION - ADD THIS
+def check_password():
+    """Returns True if the user entered the correct password."""
+    
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        entered_password = st.session_state["password"].strip()
+        
+        # Allow different capitalizations of "Morris Ewing"
+        correct_passwords = [
+            "morris ewing",
+            "Morris Ewing", 
+            "Morris ewing",
+            "morris Ewing",
+            "MORRIS EWING"
+        ]
+        
+        if entered_password in correct_passwords:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password
+        else:
+            st.session_state["password_correct"] = False
+
+    # Return True if password already verified
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Show login form
+    st.markdown("### 🔒 Enter Passcode to Access Tool")
+    st.text_input(
+        "Passcode", 
+        type="password", 
+        on_change=password_entered, 
+        key="password",
+        placeholder="Enter passcode..."
+    )
+    
+    if "password_correct" in st.session_state:
+        if not st.session_state["password_correct"]:
+            st.error("😞 Incorrect passcode. Please try again.")
+    
+    return False
+
 # Configure the page
 st.set_page_config(
     page_title="Ewing Morris Marketing Assistant",
@@ -242,6 +285,11 @@ def render_footer():
 
 def main():
     """Main application function"""
+    # CHECK PASSWORD FIRST - ADD THIS LINE
+    if not check_password():
+        st.stop()
+    
+    # If we get here, password is correct - show your normal app
     init_session_state()
     
     render_header()
