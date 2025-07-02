@@ -125,17 +125,11 @@ Ewing Morris & Co. Investment Partners Ltd."""
         
         category_profile = voice_profile.get(category, voice_profile["Newsletter Content"])
         
-        prompt = f"""DO NOT USE ANY WORDS OR PHRASES FROM THE INPUT TEXT.
-
-Your ONLY job:
-1. Extract basic facts: WHAT event, WHEN, WHERE, WHY, WHO invited
-2. Write it EXACTLY like the Ewing Morris examples below
-
-BANNED WORDS FROM INPUT: Never use words like "esteemed", "camaraderie", "delighted", "exclusive", "tapestry", "unforgettable", etc. - these are NOT Ewing Morris voice.
+        prompt = f"""Extract the facts from input, then write in authentic Ewing Morris voice using the examples below.
 
 CONTENT TYPE: {category}
 
-HERE ARE THE EXACT EWING MORRIS EXAMPLES TO COPY THE STYLE FROM:
+EWING MORRIS EXAMPLES TO MATCH:
 """
         
         for i, example in enumerate(examples[:2], 1):
@@ -143,24 +137,23 @@ HERE ARE THE EXACT EWING MORRIS EXAMPLES TO COPY THE STYLE FROM:
         
         prompt += f"""
 
-EWING MORRIS LANGUAGE PATTERN (COPY THIS EXACTLY):
-✓ "Join us for..." (not "delighted to invite")
-✓ "We're excited to..." (not "thrilled") 
-✓ Simple, direct sentences
-✓ Professional but warm
-✓ No fancy descriptive words
-✓ Clear action items like "RSVP below"
+EWING MORRIS VOICE PATTERNS (use these):
+✓ "We're very excited to..." / "We're delighted to..."
+✓ "wonderful opportunity" / "delicious cuisine" / "great experience" 
+✓ "we look forward to seeing you" / "we can't wait to see you there"
+✓ "Join us for..." 
+✓ Warm but professional language
+✓ Always end with team sign-off like "Ewing Morris Team" or "Best regards, Ewing Morris"
+✓ Add small warm descriptors: "delicious", "wonderful", "great"
 
-WHAT I NEED TO EXTRACT FROM INPUT:
-- Event type: _____
-- Purpose: _____  
-- Who's invited: _____
-- Action needed: _____
+BANNED CORPORATE FLUFF: Avoid "esteemed", "camaraderie", "tapestry", "exclusive", "unforgettable gathering", "thrilled to extend" - these are too fancy.
 
-INPUT TEXT (ignore all language, extract facts only):
+GOOD EWING MORRIS WARMTH: "very excited", "wonderful", "delicious", "great", "look forward to", "can't wait to see you"
+
+INPUT TEXT (extract facts only):
 {original_content}
 
-Now write this using ONLY the language patterns from the examples above. Sound exactly like those examples, not like the input."""
+Write this in warm, friendly Ewing Morris voice using the patterns above. Include warmth like "delicious cuisine", "wonderful opportunity", and "we can't wait to see you there"."""
         
         return prompt
     
@@ -173,16 +166,14 @@ Now write this using ONLY the language patterns from the examples above. Sound e
                 model=self.model,
                 messages=[
                     {
-                        "role": "system",
-                        "content": """You write ONLY in Ewing Morris voice. 
+                        "role": "system", 
+                        "content": """Write in authentic Ewing Morris voice - warm and professional.
 
-RULES:
-1. Extract basic facts from input (what, when, where, who)
-2. NEVER use the input's language - no matter how fancy or simple
-3. Write using ONLY the language patterns from the provided examples
-4. Copy the sentence structure and word choices from examples exactly
+INCLUDE warmth: "very excited", "wonderful", "delicious", "great experience", "look forward to seeing you", "can't wait to see you there"
 
-You are not influenced by input language AT ALL. Your output sounds identical every time, using only Ewing Morris patterns like "Join us for..." and "We're excited to..." - never "delighted", "esteemed", "camaraderie", etc."""
+AVOID corporate fluff: "esteemed", "camaraderie", "thrilled to extend", "exclusive invitation", "tapestry"
+
+Always end with friendly sign-off. Use the examples as your guide for the right level of warmth."""
                     },
                     {"role": "user", "content": prompt}
                 ],
